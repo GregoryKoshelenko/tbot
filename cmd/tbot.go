@@ -10,8 +10,7 @@ import (
 )
 
 var (
-	TeleToken = os.Getenv("TELEGRAM_TOKEN")
-	TeleChat  = os.Getenv("TELEGRAM_CHAT")
+	TeleToken = os.Getenv("TELE_TOKEN")
 )
 
 
@@ -36,6 +35,23 @@ var tbotCmd = &cobra.Command{
 
 		tbot.Handle(telebot.OnText, func(c telebot.Context) error {
 			log.Print(c.Message().Payload, c.Text())
+			msg := c.Text()	
+			switch msg {
+				case "hello":
+					c.Send(fmt.Sprintf("Hello, I'm Tbot %s!", appVersion))
+				case "ping":
+					c.Send("Pong!")
+				case "start":
+					c.Send("Welcome to the bot!")
+				case "stop":
+					c.Send("Goodbye!")
+				case "help":
+					c.Send("Available commands: hello, ping, start, stop, help")
+				case "version":
+					c.Send(fmt.Sprintf("Version: %s", appVersion))
+				default:
+					c.Send("I don't understand that command. Type 'help' for a list of comprehensible commands.")
+			}
 			return err
 		})
 
