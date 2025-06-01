@@ -39,12 +39,12 @@ windows-arm:
 	$(MAKE) build TARGETOS=windows TARGETARCH=arm64
 
 image:
-	docker build -t ${REGISTRY}/${APP}:${VERSION}-${TARGETARCH}
+	docker buildx build --platform=${TARGETOS}/${TARGETARCH} -t ${REGISTRY}/${APP}:${VERSION}-${TARGETOS}-${TARGETARCH} .
 
 push:
-	docker push ${REGISTRY}/${APP}:${VERSION}-${TARGETARCH}
+	docker push ${REGISTRY}/${APP}:${VERSION}-${TARGETOS}-${TARGETARCH}
 
 clean:
 	rm -rf tbot
-	docker rmi ${REGISTRY}/${APP}:${VERSION}-${TARGETARCH}
+	docker rmi ${REGISTRY}/${APP}:${VERSION}-${TARGETOS}-${TARGETARCH}
 
