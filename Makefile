@@ -4,8 +4,8 @@ VERSION=$(shell git describe --tags --always --abbrev=0)-$(shell git rev-parse -
 TARGETOS=linux
 TARGETARCH=arm64
 
-install:
-	go get
+deps:
+	go mod download
 
 format:
 	gofmt -s -w ./
