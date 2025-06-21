@@ -42,11 +42,16 @@ jobs:
       
       - run: echo "VERSION=$(git describe --tags --abbrev=0)~$(git rev-parse --short HEAD)" >> $GITHUB_ENV
       
-      - uses: mikefarah/yq/v4@v4.30.6
-        id: yq
-        with:
-          cmd: |
-            yq -i '.image.tag = strenv(VERSION)' helm/values.yaml
+      - name: Install yq
+        run: |
+          sudo wget -O /usr/local/bin/yq https://github.com/mikefarah/yq/releases/download/v4.30.6/yq_linux_amd64
+          sudo chmod +x /usr/local/bin/yq
+
+      - name: Update image tag in values.yaml
+        run: |
+          yq -i '.image.tag = strenv(VERSION)' helm/values.yaml
+        env:
+          VERSION: ${{ env.VERSION }}
 
       - run: |
           git config user.name github-actions
