@@ -39,7 +39,7 @@ windows-arm:
 	$(MAKE) build TARGETOS=windows TARGETARCH=arm64
 
 image:
-	docker buildx build --platform=${TARGETOS}/${TARGETARCH} -t ${REGISTRY}/${APP}:${VERSION}-${TARGETOS}-${TARGETARCH} .
+	docker build --platform=${TARGETOS}/${TARGETARCH} -t ${REGISTRY}/${APP}:${VERSION}-${TARGETOS}-${TARGETARCH} .
 
 push:
 	docker push ${REGISTRY}/${APP}:${VERSION}-${TARGETOS}-${TARGETARCH}
