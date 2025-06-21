@@ -4,6 +4,7 @@ on: push
 
 jobs:
   ci:
+    if: "!contains(github.event.head_commit.message, 'Update helm chart version')"
     name: CI
     runs-on: ubuntu-latest
 
@@ -55,11 +56,8 @@ jobs:
           VERSION: ${{ env.VERSION }}
 
       - name: Push changes
-        env:
-          G_TOKEN: ${{ secrets.G_TOKEN }}
         run: |
           git config user.name github-actions
           git config user.email github-actions@github.com
-          git remote set-url origin https://x-access-token:${G_TOKEN}@github.com/${{ github.repository }}
-          git commit -am "Update helm/values.yaml with new version ${{ env.VERSION }}"
-          git push origin HEAD:${{ github.ref_name }}
+          git commit -am "Update helm chart version ${{ env.VERSION }}"
+          git push
