@@ -60,4 +60,4 @@ jobs:
           git config user.name github-actions
           git config user.email github-actions@github.com
           git commit -am "Update helm chart version ${{ env.VERSION }}"
-          git push
+          git push origin HEAD:${GITHUB_REF_NAME}
