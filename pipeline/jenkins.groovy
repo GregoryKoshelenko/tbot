@@ -1,5 +1,19 @@
 pipeline {
-    agent any
+    agent {
+        kubernetes {
+            yaml '''
+apiVersion: v1
+kind: Pod
+spec:
+  containers:
+  - name: golang
+    image: golang:1.22-bookworm
+    command:
+    - cat
+    tty: true
+'''
+        }
+    }
     parameters {
         choice(
             name: 'OS',
@@ -35,27 +49,23 @@ pipeline {
         stage('Lint') {
             when { expression { !params.SKIP_LINT } }
             steps {
-                script {
-                    docker.image('golang:1.22-bookworm').inside('-v /var/run/docker.sock:/var/run/docker.sock') {
-                        sh 'make lint'
-                    }
+                container('golang') {
+                    sh 'make lint'
                 }
             }
         }
         stage('Test') {
             when { expression { !params.SKIP_TESTS } }
             steps {
-                script {
-                    docker.image('golang:1.22-bookworm').inside('-v /var/run/docker.sock:/var/run/docker.sock') {
-                        sh 'make test'
-                    }
+                container('golang') {
+                    sh 'make test'
                 }
             }
         }
         stage('Build') {
             steps {
-                script {
-                    docker.image('golang:1.22-bookworm').inside('-v /var/run/docker.sock:/var/run/docker.sock') {
+                container('golang') {
+                    script {
                         def target = ''
                         if (params.OS == 'linux' && params.ARCH == 'amd64') target = 'linux'
                         else if (params.OS == 'linux' && params.ARCH == 'arm64') target = 'arm'
@@ -70,26 +80,24 @@ pipeline {
         }
         stage('Docker Build') {
             steps {
-                script {
-                    docker.image('golang:1.22-bookworm').inside('-v /var/run/docker.sock:/var/run/docker.sock') {
-                        sh 'make image'
-                    }
+                container('golang') {
+                    sh 'make image'
                 }
             }
         }
         stage('Push Image') {
             steps {
-                script {
-                    docker.image('golang:1.22-bookworm').inside('-v /var/run/docker.sock:/var/run/docker.sock') {
-                        sh 'make push'
-                    }
+                container('golang') {
+                    sh 'make push'
                 }
             }
         }
     }
     post {
         always {
-            sh 'rm -rf *'
+            container('golang') {
+                sh 'rm -rf *'
+            }
         }
     }
 }
