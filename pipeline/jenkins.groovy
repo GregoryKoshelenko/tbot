@@ -27,6 +27,11 @@ pipeline {
         TARGETARCH = "${params.ARCH}"
     }
     stages {
+        stage('Install Make') {
+            steps {
+                sh 'apt-get update && apt-get install -y make'
+            }
+        }
         stage('Checkout') {
             steps {
                 checkout scm
