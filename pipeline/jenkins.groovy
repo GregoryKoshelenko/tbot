@@ -1,10 +1,5 @@
 pipeline {
-    agent {
-        docker {
-            image 'golang:1.22-bookworm'
-            args '-v /var/run/docker.sock:/var/run/docker.sock'
-        }
-    }
+    agent any
     parameters {
         choice(
             name: 'OS',
@@ -40,37 +35,55 @@ pipeline {
         stage('Lint') {
             when { expression { !params.SKIP_LINT } }
             steps {
-                sh 'make lint'
+                script {
+                    docker.image('golang:1.22-bookworm').inside('-v /var/run/docker.sock:/var/run/docker.sock') {
+                        sh 'make lint'
+                    }
+                }
             }
         }
         stage('Test') {
             when { expression { !params.SKIP_TESTS } }
             steps {
-                sh 'make test'
+                script {
+                    docker.image('golang:1.22-bookworm').inside('-v /var/run/docker.sock:/var/run/docker.sock') {
+                        sh 'make test'
+                    }
+                }
             }
         }
         stage('Build') {
             steps {
                 script {
-                    def target = ''
-                    if (params.OS == 'linux' && params.ARCH == 'amd64') target = 'linux'
-                    else if (params.OS == 'linux' && params.ARCH == 'arm64') target = 'arm'
-                    else if (params.OS == 'darwin' && params.ARCH == 'amd64') target = 'macos'
-                    else if (params.OS == 'darwin' && params.ARCH == 'arm64') target = 'macos-arm'
-                    else if (params.OS == 'windows' && params.ARCH == 'amd64') target = 'windows'
-                    else if (params.OS == 'windows' && params.ARCH == 'arm64') target = 'windows-arm'
-                    sh "make ${target}"
+                    docker.image('golang:1.22-bookworm').inside('-v /var/run/docker.sock:/var/run/docker.sock') {
+                        def target = ''
+                        if (params.OS == 'linux' && params.ARCH == 'amd64') target = 'linux'
+                        else if (params.OS == 'linux' && params.ARCH == 'arm64') target = 'arm'
+                        else if (params.OS == 'darwin' && params.ARCH == 'amd64') target = 'macos'
+                        else if (params.OS == 'darwin' && params.ARCH == 'arm64') target = 'macos-arm'
+                        else if (params.OS == 'windows' && params.ARCH == 'amd64') target = 'windows'
+                        else if (params.OS == 'windows' && params.ARCH == 'arm64') target = 'windows-arm'
+                        sh "make ${target}"
+                    }
                 }
             }
         }
         stage('Docker Build') {
             steps {
-                sh 'make image'
+                script {
+                    docker.image('golang:1.22-bookworm').inside('-v /var/run/docker.sock:/var/run/docker.sock') {
+                        sh 'make image'
+                    }
+                }
             }
         }
         stage('Push Image') {
             steps {
-                sh 'make push'
+                script {
+                    docker.image('golang:1.22-bookworm').inside('-v /var/run/docker.sock:/var/run/docker.sock') {
+                        sh 'make push'
+                    }
+                }
             }
         }
     }
