@@ -1,5 +1,10 @@
 pipeline {
-    agent any
+    agent {
+        docker {
+            image 'golang:1.22-bookworm'
+            args '-v /var/run/docker.sock:/var/run/docker.sock'
+        }
+    }
     parameters {
         choice(
             name: 'OS',
@@ -27,11 +32,6 @@ pipeline {
         TARGETARCH = "${params.ARCH}"
     }
     stages {
-        stage('Install Make') {
-            steps {
-                sh 'apt-get update && apt-get install -y make'
-            }
-        }
         stage('Checkout') {
             steps {
                 checkout scm
