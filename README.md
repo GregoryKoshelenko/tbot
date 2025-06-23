@@ -43,3 +43,33 @@ docker buildx build --platform=linux/arm64 -t tbot:linux-arm64 .
 ```
 make push REGISTRY=any-other-registry.com
 ```
+
+
+### Jenkins workflow 
+
+```bash
+kind create cluster --name jenkins
+```
+
+Install Jenkins on the cluster:
+
+```bash
+helm repo add jenkinsci https://charts.jenkins.io/
+helm repo update
+helm install jenkins jenkinsci/jenkins
+```
+
+Export the kubeconfig for the Jenkins cluster:
+```bash
+kind export kubeconfig --name jenkins
+```
+
+```bash
+kubectl exec --namespace default -it svc/jenkins -c jenkins -- /bin/cat /run/secrets/additional/chart-admin-password && echo
+```
+
+
+Forward the Jenkins service to access it locally
+```bash
+kubectl port-forward svc/jenkins 8080:8080
+```
