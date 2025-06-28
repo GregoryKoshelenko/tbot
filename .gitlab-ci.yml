@@ -1,4 +1,4 @@
-# GitLab CI/CD pipeline equivalent to Jenkins pipeline
+# GitLab CI/CD pipeline 
 
 variables:
   TARGETOS: "linux"
@@ -23,14 +23,10 @@ lint:
   rules:
     - if: '$CI_PIPELINE_SOURCE == "push"'
       when: always
- 
-
-# Test stage
-# Only runs if SKIP_TESTS is not true
-# You can set SKIP_TESTS variable in GitLab UI or pipeline trigger
 
 test:
   stage: test
+  image: golang:1.21
   script:
     - if [ "$SKIP_TESTS" != "true" ]; then make test; fi
   rules:
@@ -39,6 +35,7 @@ test:
 
 build:
   stage: build
+  image: golang:1.21
   script:
     - |
       if [ "$TARGETOS" = "linux" ] && [ "$TARGETARCH" = "amd64" ]; then make linux;
@@ -52,12 +49,16 @@ build:
     - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == "main"'
       when: always
 
+.make_install: &make_install
+  - apk add --no-cache make
+
 docker:
   stage: docker
   image: docker:latest
   services:
     - docker:dind
   script:
+    - *make_install
     - make image
   rules:
     - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == "main"'
@@ -69,6 +70,7 @@ push:
   services:
     - docker:dind
   script:
+    - *make_install
     - make push
   rules:
     - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == "main"'
