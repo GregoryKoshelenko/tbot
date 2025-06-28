@@ -1,0 +1,72 @@
+# GitLab CI/CD pipeline equivalent to Jenkins pipeline
+
+variables:
+  TARGETOS: "linux"
+  TARGETARCH: "amd64"
+  SKIP_TESTS: "false"
+  SKIP_LINT: "false"
+
+stages:
+  - lint
+  - test
+  - build
+  - docker
+  - push
+
+lint:
+  stage: lint
+  script:
+    - if [ "$SKIP_LINT" != "true" ]; then make lint; fi
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "push"'
+      when: always
+ 
+
+# Test stage
+# Only runs if SKIP_TESTS is not true
+# You can set SKIP_TESTS variable in GitLab UI or pipeline trigger
+
+test:
+  stage: test
+  script:
+    - if [ "$SKIP_TESTS" != "true" ]; then make test; fi
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "push"'
+      when: always
+
+build:
+  stage: build
+  script:
+    - |
+      if [ "$TARGETOS" = "linux" ] && [ "$TARGETARCH" = "amd64" ]; then make linux;
+      elif [ "$TARGETOS" = "linux" ] && [ "$TARGETARCH" = "arm64" ]; then make arm;
+      elif [ "$TARGETOS" = "darwin" ] && [ "$TARGETARCH" = "amd64" ]; then make macos;
+      elif [ "$TARGETOS" = "darwin" ] && [ "$TARGETARCH" = "arm64" ]; then make macos-arm;
+      elif [ "$TARGETOS" = "windows" ] && [ "$TARGETARCH" = "amd64" ]; then make windows;
+      elif [ "$TARGETOS" = "windows" ] && [ "$TARGETARCH" = "arm64" ]; then make windows-arm;
+      fi
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == "main"'
+      when: always
+
+docker:
+  stage: docker
+  image: docker:latest
+  services:
+    - docker:dind
+  script:
+    - make image
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == "main"'
+      when: always
+
+push:
+  stage: push
+  image: docker:latest
+  services:
+    - docker:dind
+  script:
+    - make push
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == "main"'
+      when: always

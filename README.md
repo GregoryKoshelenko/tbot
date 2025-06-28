@@ -57,8 +57,8 @@ Install Jenkins on the cluster:
 helm repo add jenkinsci https://charts.jenkins.io/
 helm repo update
 helm install jenkins jenkinsci/jenkins
-```
 
+```
 Export the kubeconfig for the Jenkins cluster:
 ```bash
 kind export kubeconfig --name jenkins
@@ -73,3 +73,9 @@ Forward the Jenkins service to access it locally
 ```bash
 kubectl port-forward svc/jenkins 8080:8080
 ```
+
+### Gitlab workflow
+
+Create "CI/CD for external repository" in Gitlab.
+
+Add a `.gitlab-ci.yml` file to the root.
