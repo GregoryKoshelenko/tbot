@@ -10,12 +10,11 @@ stages:
   - lint
   - test
   - build
-  - docker
   - push
 
 lint:
   stage: lint
-  image: golang:1.21 # Use a Go image for linting
+  image: golang:1.21
   script:
     - go install golang.org/x/lint/golint@latest
     - export PATH=$PATH:$(go env GOPATH)/bin
@@ -52,25 +51,15 @@ build:
 .make_install: &make_install
   - apk add --no-cache make
 
-docker:
-  stage: docker
-  image: docker:latest
-  services:
-    - docker:dind
-  script:
-    - *make_install
-    - make image
-  rules:
-    - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == "main"'
-      when: always
-
-push:
+build_and_push:
   stage: push
   image: docker:latest
   services:
     - docker:dind
-  script:
+  before_script:
     - *make_install
+  script:
+    - make image
     - make push
   rules:
     - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == "main"'
