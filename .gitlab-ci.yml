@@ -15,7 +15,10 @@ stages:
 
 lint:
   stage: lint
+  image: golang:1.21 # Use a Go image for linting
   script:
+    - go install golang.org/x/lint/golint@latest
+    - export PATH=$PATH:$(go env GOPATH)/bin
     - if [ "$SKIP_LINT" != "true" ]; then make lint; fi
   rules:
     - if: '$CI_PIPELINE_SOURCE == "push"'
