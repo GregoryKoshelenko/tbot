@@ -5,7 +5,7 @@ TARGETOS=linux
 TARGETARCH=arm64
 
 deps:
-	go mod download
+	go get
 
 format:
 	gofmt -s -w ./
