@@ -8,7 +8,7 @@ replicaCount: 1
 image:
   registry: "ghcr.io"
   repository: gregorykoshelenko/tbot
-  tag: v1.0.0-986ba5d
+  tag: v1.0.0-e57548d-linux-amd64
   os: linux
   arch: amd64
 secrets:
