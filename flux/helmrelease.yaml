@@ -1,0 +1,17 @@
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: tbot
+  namespace: default
+spec:
+  releaseName: tbot
+  chart:
+    spec:
+      chart: ./helm
+      sourceRef:
+        kind: GitRepository
+        name: tbot-repo
+        namespace: flux-system
+  interval: 1m
+  values:
+    # Add your custom values here or reference values.yaml

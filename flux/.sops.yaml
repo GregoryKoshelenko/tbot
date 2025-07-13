@@ -1,0 +1,3 @@
+creation_rules:
+  - kms: "gcp-kms://projects/<YOUR_PROJECT_ID>/locations/global/keyRings/<YOUR_KEYRING>/cryptoKeys/<YOUR_KEY>"
+    encrypted_regex: '^(data|stringData)$'
