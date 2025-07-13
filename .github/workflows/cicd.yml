@@ -45,7 +45,7 @@ jobs:
         with:
           fetch-depth: 0
       
-      - run: echo "VERSION=$(git describe --tags --abbrev=0)-$(git rev-parse --short HEAD)-linux-arm64" >> $GITHUB_ENV
+      - run: echo "VERSION=$(git describe --tags --abbrev=0)-$(git rev-parse --short HEAD)-linux-amd64" >> $GITHUB_ENV
       
       - name: Install yq
         run: |

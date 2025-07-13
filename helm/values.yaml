@@ -6,8 +6,10 @@
 replicaCount: 1
 # This sets the container image more information can be found here: https://kubernetes.io/docs/concepts/containers/images/
 image:
-  repository: GregoryKoshelenko
-  tag: v1.0.0-4ba1ef6-linux-arm64
+  registry: "ghcr.io"
+  repository: GregoryKoshelenko/tbot
+  tag: v1.0.0-c9d6246
+  os: linux
   arch: amd64
 secrets:
   name: tbot
