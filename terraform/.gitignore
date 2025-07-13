@@ -1,0 +1,27 @@
+# Ignore Terraform state and backup files
+*.tfstate
+*.tfstate.*
+.terraform/
+.terraformrc
+terraform.tfvars
+*.tfvars
+*.tvars
+crash.log
+
+# Ignore provider and module binaries
+.terraform.lock.hcl
+
+# Ignore editor/project files
+.vscode/
+.idea/
+*.swp
+*.bak
+*.tmp
+
+# Ignore kubeconfig and sensitive files
+kubeconfig*
+.env
+
+# Ignore OS files
+.DS_Store
+Thumbs.db
